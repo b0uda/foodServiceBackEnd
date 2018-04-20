@@ -10,13 +10,23 @@ var _ = require('underscore-node');
 
 var FormData = require('form-data');
 
-var food = require("./food-list.json");
-
 var MongoClient = require('mongodb').MongoClient;
-var db_url = "mongodb://localhost:27017/foodService";
+var db_url = "mongodb://localhost:27017/";
 
 
-let foodList = food.foods;
+let foodList;
+
+MongoClient.connect(db_url, function (err, db) {
+  if (err) throw err;
+  var dbo = db.db("foodService");
+  dbo.collection("foods").find({}).toArray(function (err, result) {
+    if (err) throw err;
+    foodList = result;
+    db.close();
+  });
+});
+
+
 
 app.use(fileUpload());
 
@@ -1024,8 +1034,6 @@ transition: all 1s;
 
 // NON image part
 
-
-
 // get all food
 app.get('/allFood', function (req, res) {
   res.json(foodList);
@@ -1049,12 +1057,15 @@ app.get('/food/:id', function (req, res) {
 
 // get all food
 app.get('/places', function (req, res) {
+  // todo places need to get them with query
+
   const places = ["All", "mcdonalds", "Authentik", "Pizza Hut", "khalid", "Tacos de Lyon"];
   res.json(places);
 })
 
 // get food by budget
 app.get('/budgetFood/:budget', function (req, res) {
+  // todo mongodb
 
   const budget = req.params.budget;
 
@@ -1073,6 +1084,8 @@ app.get('/budgetFood/:budget', function (req, res) {
 
 // filter food by category
 app.get('/categoryFood/:budget/:category', function (req, res) {
+  // todo mongodb
+
   const budget = req.params.budget;
   const category = req.params.category;
 
@@ -1093,6 +1106,8 @@ app.get('/categoryFood/:budget/:category', function (req, res) {
 
 // filter food by place
 app.get('/placeFood/:budget/:place', function (req, res) {
+  // todo mongodb
+
   const budget = req.params.budget;
   const place = req.params.place;
 
@@ -1113,6 +1128,8 @@ app.get('/placeFood/:budget/:place', function (req, res) {
 
 // filter food by category and place
 app.get('/categoryAndPlaceFood/:budget/:category/:place', function (req, res) {
+  // todo mongodb
+
   const budget = req.params.budget;
   const place = req.params.place;
   const category = req.params.category;
@@ -1541,7 +1558,17 @@ font-size:3rem;
 
 })
 
-
+app.get("/dbCreate", (req, res) => {
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    dbo.collection("foods").insertMany(foodList, function (err, res) {
+      if (err) throw err;
+      console.log("Number of documents inserted: " + res.insertedCount);
+      db.close();
+    });
+  });
+});
 
 
 app.listen(3030, () => console.log('Example app listening on port 3030!'))
