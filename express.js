@@ -8,13 +8,27 @@ var multiparty = require('multiparty');
 
 var _ = require('underscore-node');
 
+var bodyParser = require('body-parser')
+
+
 var FormData = require('form-data');
 
 var MongoClient = require('mongodb').MongoClient;
 var db_url = "mongodb://localhost:27017/";
-
+var ObjectId = require('mongodb').ObjectID;
 
 let foodList;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
+
+app.use(fileUpload());
+
+app.use("/public", express.static('public'));
+app.use("/uploads", express.static('uploads'));
+
 
 MongoClient.connect(db_url, function (err, db) {
   if (err) throw err;
@@ -26,16 +40,12 @@ MongoClient.connect(db_url, function (err, db) {
   });
 });
 
-
-
-app.use(fileUpload());
-
-app.use("/public", express.static('public'));
-app.use("/uploads", express.static('uploads'));
-
 app.set('view engine', 'pug')
 
 app.get('/', (req, res) => res.send('Hello World!'))
+
+
+
 
 // upload by USER
 
@@ -285,7 +295,7 @@ transition: all 1s;
     </style>
     <div>
         <h1>Image uploaded by admin panel and other images deleted</h1>
-        <a class="btn" href="http://localhost:3030/list">Back to List</a>
+        <a class="btn" href="http://localhost:3030/listImage">Back to List</a>
     </div>`);
 
   });
@@ -300,7 +310,7 @@ transition: all 1s;
 // list of pictures pending and validated
 
 
-app.get("/list", (request, response) => {
+app.get("/listImage", (request, response) => {
 
 
 
@@ -835,7 +845,7 @@ background: #4CAF50;
   </div><!-- .wide -->
 
   <form class="navigation" encType="multipart/form-data" method="post" action="http://localhost:3030/uploadAdmin/<%= pics[0].split("-")[0] %>">
-  <a class="btn" href="http://localhost:3030/list">Back to List</a>
+  <a class="btn" href="http://localhost:3030/listImage">Back to List</a>
   <input class="btn" name="picture" type="file" />
   <input class="btn" type="submit" />
   </form>
@@ -1021,7 +1031,7 @@ transition: all 1s;
     </style>
     <div>
         <h1>Image Validated and others deleted</h1>
-        <a class="btn" href="http://localhost:3030/list">Back to List</a>
+        <a class="btn" href="http://localhost:3030/listImage">Back to List</a>
     </div>`);
 
   });
@@ -1036,10 +1046,13 @@ transition: all 1s;
 
 // get all food
 app.get('/allFood', function (req, res) {
+
+
+
   res.json(foodList);
 })
 
-// get all food
+// get food by id
 app.get('/food/:id', function (req, res) {
   const id = req.params.id;
 
@@ -1151,7 +1164,20 @@ app.get('/categoryAndPlaceFood/:budget/:category/:place', function (req, res) {
 })
 
 
-app.get("/jsonList", (req, res) => {
+app.get("/foodList", (req, res) => {
+
+
+  // update the foodList
+
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    dbo.collection("foods").find({}).toArray(function (err, result) {
+      if (err) throw err;
+      foodList = result;
+      db.close();
+    });
+  });
 
   var compiled = _.template(`
 
@@ -1161,6 +1187,9 @@ app.get("/jsonList", (req, res) => {
 
     <link href="//datatables.net/download/build/nightly/jquery.dataTables.css" rel="stylesheet" type="text/css" />
     <script src="//datatables.net/download/build/nightly/jquery.dataTables.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+
+
     <style>
     // Table Styles
 
@@ -1349,7 +1378,7 @@ app.get("/jsonList", (req, res) => {
 
     table.dataTable thead .sorting_asc {
       background: url("../img/datatables/sort_asc.png") no-repeat center right;
-      background: yellow;
+      background: #4CAF50;
       color:white;
     }
     table.dataTable thead .sorting_desc {
@@ -1387,7 +1416,6 @@ font-size:3rem;
   
 
   #example{
-    margin-top:20px;
     
   }
 
@@ -1410,18 +1438,19 @@ font-size:3rem;
   }
   
   .popup {
-    margin: 70px auto;
+    margin: 700px auto;
     padding: 20px;
     background: #fff;
     border-radius: 5px;
     width: 30%;
     position: relative;
     transition: all 5s ease-in-out;
+    margin-top:100px;
   }
   
   .popup h2 {
     margin-top: 0;
-    color: #333;
+    color: #00adf7;
     font-family: Tahoma, Arial, sans-serif;
   }
   .popup .close {
@@ -1435,7 +1464,7 @@ font-size:3rem;
     color: #333;
   }
   .popup .close:hover {
-    color: #06D85F;
+    color: #00adf7;
   }
   .popup .content {
     max-height: 30%;
@@ -1469,6 +1498,50 @@ font-size:3rem;
     transform: scale(1.1);
   }
   
+
+  .form {
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+    max-width: 360px;
+    margin: 0 auto 100px;
+    padding: 45px;
+    text-align: center;
+
+  }
+  .form input {
+    font-family: "Roboto", sans-serif;
+    outline: 0;
+    background: #f2f2f2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  .form button  {
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    outline: 0;
+    background: ;
+    width: 100%;
+    border: 0;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+    -webkit-transition: all 0.3 ease;
+    transition: all 0.3 ease;
+    cursor: pointer;
+  }
+  .form button:hover,.form button:active,.form button:focus {
+    background: #00f3ff;
+  }
+
+  
+
+  
+
     </style>
     <meta charset=utf-8 />
     <title>DataTables - JS Bin</title>
@@ -1515,7 +1588,7 @@ font-size:3rem;
           <td><%= foodList[food].name %></td>
           <td><%= foodList[food].category %></td>
           <td><%= foodList[food].price %></td>
-          <td>has photo</td>
+          <td><%= images[food].state %>  </td>
         </tr>
         
           <% } %>
@@ -1529,12 +1602,18 @@ font-size:3rem;
     
 
 <div id="popup1" class="overlay">
-	<div class="popup">
-		<h2>Add new Food to List</h2>
+	<div class="popup form">
+		<h2>Add new Food form</h2>
 		<a class="close" href="#">&times;</a>
-		<div class="content">
-			Thank to pop me out of that button, but now i'm done so you can close this window.
-		</div>
+		 
+    <form method="post" action="http://localhost:3030/foodAdd" class="login-form">
+    <input name="name" type="text" placeholder="name"/>
+    <input name="place" type="text" placeholder="place"/>
+    <input name="category" type="text" placeholder="category"/>
+    <input name="price" type="text" placeholder="price"/>
+      <input style="background: #00adf7; color:white; " type="submit" value="Ajouter" />
+
+  </form>	 
 	</div>
 </div>
     
@@ -1550,25 +1629,145 @@ font-size:3rem;
   
   `);
 
-  let template = compiled({
-    foodList: foodList
+  let foodImages = [];
+
+  let picturesList = [];
+  let _folder = "./uploads/";
+
+
+  let picturesUrl = [];
+  let pictureState = "";
+
+  // get all files in List
+  fs.readdir(_folder, (err, files) => {
+    files.forEach(file => {
+      picturesList.push(file);
+    });
+    // console.dir(picturesList);
+
+
+    // for each food in the list search for images related to it
+    foodList.forEach(food => {
+
+
+
+      picturesList.forEach(function (value, index) {
+
+
+
+        if (value.indexOf(`${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}`) !== -1) {
+
+          // console.log(`${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}`);
+          // console.log(value);
+          picturesUrl.push(value);
+
+        }
+      });
+
+      // console.log(food.id)
+      // console.log(picturesUrl);
+
+      if (picturesUrl.length == 0) {
+        pictureState = "<span style='color:red;'> no photo </span>";
+      } else if (picturesUrl.length == 1) {
+
+        if (picturesUrl[0].indexOf("-validated" != -1)) {
+          pictureState = `<span style='color:green;'> validated <i class="fas fa-check"> </i> </span>`;
+        } else {
+          pictureState = `<span style='color:orange;'> 1 pending <i class="far fa-clock"></i>  </span>        `;
+        }
+
+      } else {
+        pictureState = `<span style='color:orange;'>  ${picturesUrl.length} pending <i class="far fa-clock"> </i>  </span>      `;
+      }
+
+      // pictureimages is array of ids and pictures
+      foodImages.push({
+        id: food.id,
+        images: picturesUrl,
+        state: pictureState
+      });
+
+      picturesUrl = [];
+
+    });
+
+    console.log(foodImages);
+
+    let template = compiled({
+      foodList: foodList,
+      images: foodImages
+    });
+
+    res.end(template);
+
   });
 
-  res.end(template);
+
 
 })
 
-app.get("/dbCreate", (req, res) => {
+app.post("/foodAdd", (req, res) => {
+
+  console.dir(req.body.name);
+
+  var maxId;
+
+  // get max id for autogeneration
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
     var dbo = db.db("foodService");
-    dbo.collection("foods").insertMany(foodList, function (err, res) {
+    dbo.collection("foods").find({}, {
+      id: 1
+    }).sort({
+      id: -1
+    }).toArray(function (err, result) {
       if (err) throw err;
-      console.log("Number of documents inserted: " + res.insertedCount);
+
       db.close();
+      maxId = result[0].id;
+      console.log(maxId);
+      maxId = Number(maxId);
+      let _id = ++maxId;
+      console.log(`max : ${maxId} , new : ${_id}`);
+      // Add food Item
+      MongoClient.connect(db_url, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("foodService");
+        var foodToAdd = {
+          id: _id,
+          name: req.body.name,
+          place: req.body.place,
+          price: req.body.price,
+          category: req.body.category
+        };
+        dbo.collection("foods").insertOne(foodToAdd, function (err, res) {
+          if (err) throw err;
+          console.log("1 Food Item inserted");
+          db.close();
+        });
+      });
+
     });
   });
-});
+
+  res.redirect('/foodList');
+
+})
+
+// creation of database
+
+// app.get("/dbCreate", (req, res) => {
+//   MongoClient.connect(db_url, function (err, db) {
+//     if (err) throw err;
+//     var dbo = db.db("foodService");
+//     dbo.collection("foods").insertMany(foodList, function (err, res) {
+//       if (err) throw err;
+//       console.log("Number of documents inserted: " + res.insertedCount);
+//       db.close();
+//     });
+//   });
+// });
 
 
 app.listen(3030, () => console.log('Example app listening on port 3030!'))
