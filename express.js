@@ -224,10 +224,6 @@ app.post('/uploadAdmin/:foodId', function (req, res) {
     let ext = sampleFile.name.split(".")[1];
 
 
-
-
-
-
     pictureUrl.forEach((_url) => {
       fs.unlink(`./uploads/${_url}`, (err) => {
         if (err) throw err;
@@ -295,7 +291,7 @@ transition: all 1s;
     </style>
     <div>
         <h1>Image uploaded by admin panel and other images deleted</h1>
-        <a class="btn" href="http://localhost:3030/listImage">Back to List</a>
+        <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
     </div>`);
 
   });
@@ -837,20 +833,31 @@ background: #4CAF50;
         <% } %>
 
     
-   
-    
-    
     </ul><!-- .gallery-portfolio -->
 
   </div><!-- .wide -->
 
+  <% if(validated != 'new') { %>
+
   <form class="navigation" encType="multipart/form-data" method="post" action="http://localhost:3030/uploadAdmin/<%= pics[0].split("-")[0] %>">
-  <a class="btn" href="http://localhost:3030/listImage">Back to List</a>
+  <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
   <input class="btn" name="picture" type="file" />
   <input class="btn" type="submit" />
   </form>
 
 
+  <% } %>
+
+  <% if(validated == 'new') { %>
+
+    <form class="navigation" encType="multipart/form-data" method="post" action="http://localhost:3030/uploadAdmin/<%= pics[0] %>">
+    <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
+    <input class="btn" name="picture" type="file" />
+    <input class="btn" type="submit" />
+    </form>
+  
+  
+    <% } %>
 
 </div><!-- .site -->
 
@@ -1031,7 +1038,7 @@ transition: all 1s;
     </style>
     <div>
         <h1>Image Validated and others deleted</h1>
-        <a class="btn" href="http://localhost:3030/listImage">Back to List</a>
+        <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
     </div>`);
 
   });
@@ -1085,7 +1092,7 @@ app.get('/budgetFood/:budget', function (req, res) {
   let foodListFiltred = [];
 
   foodList.forEach(food => {
-    if (food.price <= budget) {
+    if (Number(food.price) <= Number(budget)) {
       foodListFiltred.push(food);
     }
   });
@@ -1107,7 +1114,7 @@ app.get('/categoryFood/:budget/:category', function (req, res) {
   let foodListFiltred = [];
 
   foodList.forEach(food => {
-    if (food.price <= budget && food.category === category) {
+    if (Number(food.price) <= Number(budget) && food.category === category) {
       foodListFiltred.push(food);
     }
   });
@@ -1130,7 +1137,7 @@ app.get('/placeFood/:budget/:place', function (req, res) {
   console.log(place);
   foodList.forEach(food => {
     const food_place = food.place.replace(/ /g, '');
-    if (food.price <= budget && food_place === place) {
+    if (Number(food.price) <= Number(budget) && food_place === place) {
       foodListFiltred.push(food);
     }
   });
@@ -1153,12 +1160,10 @@ app.get('/categoryAndPlaceFood/:budget/:category/:place', function (req, res) {
 
   foodList.forEach(food => {
     const food_place = food.place.replace(/ /g, '');
-    if (food.price <= budget && food_place === place && food.category === category) {
+    if (Number(food.price) <= Number(budget) && food_place === place && food.category === category) {
       foodListFiltred.push(food);
     }
   });
-
-
 
   res.json(foodListFiltred);
 })
@@ -1166,18 +1171,6 @@ app.get('/categoryAndPlaceFood/:budget/:category/:place', function (req, res) {
 
 app.get("/foodList", (req, res) => {
 
-
-  // update the foodList
-
-  MongoClient.connect(db_url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("foodService");
-    dbo.collection("foods").find({}).toArray(function (err, result) {
-      if (err) throw err;
-      foodList = result;
-      db.close();
-    });
-  });
 
   var compiled = _.template(`
 
@@ -1263,11 +1256,48 @@ app.get("/foodList", (req, res) => {
     table.dataTable tfoot {
       background-color: #f5f5f5;
     }
+
+
+
+    .dataTables_filter input{
+      font-family: "Roboto", sans-serif;
+    outline: 0;
+    background: #f2f2f2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    }
+
+    select{
+      font-family: "Roboto", sans-serif;
+      outline: 0;
+      background: #f2f2f2;
+      width: 100%;
+      border: 0;
+      margin: 0 0 15px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 14px;
+      height:30px;
+    }
+
+    #example_filter{
+      color:white;
+      margin-right:2%;
+      width:25%;
+    }
+
+    #example_length{
+      color:white;
+    }
     
     table.dataTable thead th,
     table.dataTable tfoot th {
       font-weight: bold;
-      border-bottom: 1px solid #111111;
+
     }
     
     table.dataTable thead th:active,
@@ -1301,7 +1331,7 @@ app.get("/foodList", (req, res) => {
     
     table.dataTable tfoot th,
     table.dataTable tfoot td {
-      border-top: 1px solid #111111;
+      border:none;
     }
     
     // hover indicator(s)
@@ -1550,7 +1580,7 @@ font-size:3rem;
     <div class="container">
    <div class="box" style="text-align:center;">
    <h1 style=" display:inline-block;">List of Foods Json </h1>
-    <a class="button " href="#popup1">+</a>
+    <a style="border-radius: 50%;" class="button " href="#popup1">+</a>
   </div>  
       <table id="example"
         datatable="" width="100%" cellspacing="0"
@@ -1609,8 +1639,13 @@ font-size:3rem;
     <form method="post" action="http://localhost:3030/foodAdd" class="login-form">
     <input name="name" type="text" placeholder="name"/>
     <input name="place" type="text" placeholder="place"/>
-    <input name="category" type="text" placeholder="category"/>
-    <input name="price" type="text" placeholder="price"/>
+
+    <select style="width:100%; height: 50px; border:none; margin-bottom:5px;" name="category">
+          <option>burger</option>
+          <option>pizza</option>
+          <option>tacos</option>
+    </select>
+    <input name="price" type="number" placeholder="price"/>
       <input style="background: #00adf7; color:white; " type="submit" value="Ajouter" />
 
   </form>	 
@@ -1629,6 +1664,7 @@ font-size:3rem;
   
   `);
 
+
   let foodImages = [];
 
   let picturesList = [];
@@ -1638,74 +1674,446 @@ font-size:3rem;
   let picturesUrl = [];
   let pictureState = "";
 
-  // get all files in List
-  fs.readdir(_folder, (err, files) => {
-    files.forEach(file => {
-      picturesList.push(file);
-    });
-    // console.dir(picturesList);
+  // update the foodList
+
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    dbo.collection("foods").find({}).toArray(function (err, result) {
+      if (err) throw err;
+      foodList = result;
+      db.close();
+
+      // get all files in List
+      fs.readdir(_folder, (err, files) => {
+        files.forEach(file => {
+          picturesList.push(file);
+        });
+        // console.dir(picturesList);
 
 
-    // for each food in the list search for images related to it
-    foodList.forEach(food => {
+        // for each food in the list search for images related to it
+        foodList.forEach(food => {
 
 
 
-      picturesList.forEach(function (value, index) {
+          picturesList.forEach(function (value, index) {
 
 
 
-        if (value.indexOf(`${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}`) !== -1) {
+            if (value.indexOf(`${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}`) !== -1) {
 
-          // console.log(`${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}`);
-          // console.log(value);
-          picturesUrl.push(value);
+              // console.log(`${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}`);
+              // console.log(value);
+              picturesUrl.push(value);
 
-        }
+            }
+          });
+
+          // console.log(food.id)
+          // console.log(picturesUrl);
+
+          if (picturesUrl.length == 0) {
+            pictureState = `<a href="http://localhost:3030/uploadNewImage/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}"><span style='color:red;'> no photo </span> </a>`;
+          } else if (picturesUrl.length == 1) {
+
+            if (picturesUrl[0].indexOf("-validated" != -1)) {
+              pictureState = `<a href="http://localhost:3030/foodValidate/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}/yes"><span style='color:green;'> validated <i class="fas fa-check"> </i> </span></a>`;
+            } else {
+              pictureState = `<a href="http://localhost:3030/foodValidate/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}/non"><span style='color:orange;'> 1 pending <i class="far fa-clock"></i>  </span>   </a>     `;
+            }
+
+          } else {
+            pictureState = `<a href="http://localhost:3030/foodValidate/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}/non"><span style='color:orange;'>  ${picturesUrl.length} pending <i class="far fa-clock"> </i>  </span>  </a>    `;
+          }
+
+          // pictureimages is array of ids and pictures
+          foodImages.push({
+            id: food.id,
+            images: picturesUrl,
+            state: pictureState
+          });
+
+          picturesUrl = [];
+
+        });
+
+        // console.log(foodImages);
+
+        let template = compiled({
+          foodList: foodList,
+          images: foodImages
+        });
+
+        res.end(template);
+
       });
 
-      // console.log(food.id)
-      // console.log(picturesUrl);
-
-      if (picturesUrl.length == 0) {
-        pictureState = "<span style='color:red;'> no photo </span>";
-      } else if (picturesUrl.length == 1) {
-
-        if (picturesUrl[0].indexOf("-validated" != -1)) {
-          pictureState = `<span style='color:green;'> validated <i class="fas fa-check"> </i> </span>`;
-        } else {
-          pictureState = `<span style='color:orange;'> 1 pending <i class="far fa-clock"></i>  </span>        `;
-        }
-
-      } else {
-        pictureState = `<span style='color:orange;'>  ${picturesUrl.length} pending <i class="far fa-clock"> </i>  </span>      `;
-      }
-
-      // pictureimages is array of ids and pictures
-      foodImages.push({
-        id: food.id,
-        images: picturesUrl,
-        state: pictureState
-      });
-
-      picturesUrl = [];
-
     });
-
-    console.log(foodImages);
-
-    let template = compiled({
-      foodList: foodList,
-      images: foodImages
-    });
-
-    res.end(template);
-
   });
 
 
 
+
+
+
+
 })
+
+app.get("/uploadNewImage/:url", (req, res) => {
+
+
+
+  var compiled = _.template(`
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Document</title>
+      <style>
+      body {
+        font: 13px/1.231 "Lucida Grande", Verdana, sans-serif;
+        background-color: #00adfc;
+        color: #111;
+        margin: 0;
+      }
+      .site {
+        /* width: 720px; */
+        max-width: 55.38461538461538em;
+        margin: 1.25em auto;
+        padding: 3.6em;
+        overflow: auto;
+        background-color: #f5f5f5;
+      }
+      .wide {
+        width: 100%;
+      }
+      /* Portfolio gallery */
+      .gallery-portfolio img {
+        max-width: 100% !important;
+        display: block;
+        border: none;
+        padding: 0;
+      }
+      .gallery {
+        overflow: auto;
+        list-style: none;
+      }
+      .gallery-portfolio {
+        margin: 2em auto 0;
+        overflow: auto;
+        list-style: none;
+        padding: 0 !important;
+      }
+      .gallery-portfolio li,
+      .gallery-portfolio li a {
+        float: left;
+        box-sizing: border-box;
+      }
+      .gallery-portfolio li {
+        float: left;
+        width: 29%;
+        margin: 0 0.5% 3% 0;
+        margin-left:3%;
+        padding: 0px;
+        background-color: #fff;
+        border: 1px solid #e3e3e3;
+        overflow:hidden;
+      }
+      .gallery-portfolio li:nth-child(3n+0) {
+        margin-right: 0;
+        /* outline: 2px dotted red; */
+      }
+      .gallery-portfolio li a {
+        text-decoration: none;
+        width: 100%;
+        max-height: 126px;
+        transition: outline .4s;
+        outline: 5px solid transparent;
+      }
+  
+
+
+      .gallery-portfolio li:nth-child(3n+1) {
+        clear: left;
+        /* outline: 3px solid green; */
+      }
+      /* images original size: width:400px, height: 225px
+      images rendered size: width:224px, height: 126px
+       */
+      
+      p {
+        margin-bottom: 20px;
+        margin-top: 0px;
+      }
+      /* ==========================================================
+      Responsive-ness
+      ============================================================= */
+      /* Mobile (landscape)
+      Note: Design for a width of 480px
+      ------------------------------------------------------------- */
+      @media only screen and ( min-width: 574px ) and ( max-width: 861px ) {
+        .wide {
+          /* width: auto; */
+        } 
+      }
+      
+      @media only screen and ( max-width: 574px ) {
+        .gallery-portfolio  {
+          overflow: hidden;
+        }
+        .gallery-portfolio li {
+          width: 100%;
+          max-width: 400px;
+        }
+        .gallery-portfolio li a {
+          height: auto;
+          max-height: inherit;
+        }
+      }
+
+      .btn{
+        color:#fff;
+  text-align: center;
+  padding: 20px;
+        text-align: center;
+  cursor: pointer;
+  font-size:24px;
+  margin: 0 0 0 100px;
+        border-radius: 4px;
+  background-color:#00adf7;
+  border: none;
+  padding: 20px;
+  width: 200px;
+  display: inline-block;
+  transition: all 0.5s;
+  margin-top:20px;
+  
+      }
+
+      #btn_validate , #btn_delete{
+        color:#fff;
+        text-align: center;
+        cursor: pointer;
+        display: inline-block;
+        transition: all 0.5s;
+        width:50%;
+      }
+
+      #btn_validate:hover , #btn_delete:hover{
+        outline-color:transparent;
+        animation: btn_animate 1s linear;
+       
+      }
+
+      @keyframes btn_animate{
+        0%{ transform: rotate(0);}
+        30%{ transform: rotate(-5deg);}
+        60%{ transform: rotate(5deg);}
+        0%{ transform: rotate(0);}
+      }
+
+      #btn_validate{
+background: #4CAF50;
+      }
+
+      #btn_delete{
+        background:#F44336;
+      }
+
+      .entry-title{
+        color:#00adf7;
+        font-weight:bold;
+        text-align:center;
+      }
+
+      .food_item{
+        transition: all .5s;
+        width:20%;
+
+      }
+
+      .food_item:hover{
+        transform: scale(1.1);
+      }
+
+      .site{
+        padding:10px;
+        width: 80%;
+        max-width: 90%;
+      }
+      
+      @media only screen and ( min-width: 862px ) {   }
+
+
+
+
+      /* The Modal (background) */
+      .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1; /* Sit on top */
+          padding-top: 100px; /* Location of the box */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+      }
+      
+      /* Modal Content (image) */
+      .modal-content {
+          margin: auto;
+          display: block;
+          width: 80%;
+          max-width: 700px;
+      }
+      
+      /* Caption of Modal Image */
+      #caption {
+          margin: auto;
+          display: block;
+          width: 80%;
+          max-width: 700px;
+          text-align: center;
+          color: #ccc;
+          padding: 10px 0;
+          height: 150px;
+      }
+      
+      /* Add Animation */
+      .modal-content, #caption {    
+          -webkit-animation-name: zoom;
+          -webkit-animation-duration: 0.6s;
+          animation-name: zoom;
+          animation-duration: 0.6s;
+      }
+      
+      @-webkit-keyframes zoom {
+          from {-webkit-transform:scale(0)} 
+          to {-webkit-transform:scale(1)}
+      }
+      
+      @keyframes zoom {
+          from {transform:scale(0)} 
+          to {transform:scale(1)}
+      }
+      
+      /* The Close Button */
+      .close {
+          position: absolute;
+          top: 15px;
+          right: 35px;
+          color: #f1f1f1;
+          font-size: 40px;
+          font-weight: bold;
+          transition: 0.3s;
+      }
+
+      #img01{
+        // width:500px;
+        // height:500px;
+      }
+
+      .food_img{
+        width:100%;
+        height:230px;
+      }
+
+      .food_img_validated{
+        width:80%;
+        margin-left: 10%;
+        height: 500px;
+      }
+
+      </style>
+    </head>
+    
+    <body>
+    <div class="site">
+  <header class="entry-header wide">
+    <h2 class="entry-title">Pictures Pending for <%= pic_name %></h2>
+  </header>
+
+  <div class="entry-content wide">
+
+    
+    
+
+  </div><!-- .wide -->
+
+
+
+ 
+    <form class="navigation" encType="multipart/form-data" method="post" action="http://localhost:3030/uploadAdmin/<%= picUrl %>">
+    <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
+    <input class="btn" name="picture" type="file" />
+    <input class="btn" type="submit" />
+    </form>
+  
+  
+ 
+
+</div><!-- .site -->
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="img01">
+  <div id="caption"></div>
+</div>
+
+
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var img = document.getElementsByClassName('food_img');
+var modalImg = document.getElementById("img01");
+var captionText = document.getElementById("caption");
+
+console.dir(img);
+
+
+for (i = 0; i < img.length; i++) {
+
+  img[i].onclick = function(){
+    modal.style.display = "block";
+    modalImg.src = this.src;
+    captionText.innerHTML = this.alt;
+}
+}
+
+
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() { 
+    modal.style.display = "none";
+}
+</script>
+    
+    </body>`);
+
+  let template = compiled({
+    pic_name: req.params.url,
+    picUrl: req.params.url
+
+  });
+
+  res.end(template);
+
+});
+
 
 app.post("/foodAdd", (req, res) => {
 
