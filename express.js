@@ -19,12 +19,25 @@ var ObjectId = require('mongodb').ObjectID;
 
 let foodList;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
+
+
+// for parsing application/json
+
+var jsonParser = bodyParser.json()
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({
   extended: false
+})
+
+
+// for parsing application/x-www-form-urlencoded
+app.use(fileUpload({
+  limits: {
+    fileSize: 50 * 1024 * 1024
+  },
 }));
 
-app.use(fileUpload());
 
 app.use("/public", express.static('public'));
 app.use("/uploads", express.static('uploads'));
@@ -2115,9 +2128,9 @@ span.onclick = function() {
 });
 
 
-app.post("/foodAdd", (req, res) => {
+app.post("/foodAdd", urlencodedParser, (req, res) => {
 
-  console.dir(req.body.name);
+  if (!req.body) return res.sendStatus(400)
 
   var maxId;
 
