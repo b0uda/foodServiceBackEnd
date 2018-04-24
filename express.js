@@ -191,6 +191,7 @@ app.get("/getImage/:image", (req, res) => {
 
     } else {
       console.log("image non validated");
+      res.end("noimage");
     }
 
   });
@@ -1581,9 +1582,26 @@ font-size:3rem;
     background: #00f3ff;
   }
 
-  
+  .fa-trash{
+    float:right;
+    color:red;
+    cursor:pointer;
+    transition:transform 1s;
+  }
 
-  
+  .fa-trash:hover{
+    transform:scale(1.2);
+  }
+
+
+  .item:hover{
+    background: #00adf7;
+    color:white;
+  }
+
+.item a{
+  text-decoration:none;
+}
 
     </style>
     <meta charset=utf-8 />
@@ -1625,13 +1643,13 @@ font-size:3rem;
         <tbody>
 
         <% for(var food in foodList) { %>
-          <tr>
-          <td><%= foodList[food].id %></td>
+          <tr class="item">
+          <td><%= foodList[food].id %>         </td>
           <td><%= foodList[food].place %></td>
           <td><%= foodList[food].name %></td>
           <td><%= foodList[food].category %></td>
           <td><%= foodList[food].price %></td>
-          <td><%= images[food].state %>  </td>
+          <td><%= images[food].state %> <a href="http://localhost:3030/foodDelete/<%= foodList[food].id %>"><i class="fas fa-trash"></i></a>   </td>
         </tr>
         
           <% } %>
@@ -1726,19 +1744,27 @@ font-size:3rem;
           // console.log(food.id)
           // console.log(picturesUrl);
 
+          // console.dir(picturesUrl);
+
           if (picturesUrl.length == 0) {
             pictureState = `<a href="http://localhost:3030/uploadNewImage/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}"><span style='color:red;'> no photo </span> </a>`;
+            // console.log("no photo");
           } else if (picturesUrl.length == 1) {
 
-            if (picturesUrl[0].indexOf("-validated" != -1)) {
+            if (picturesUrl[0].indexOf("-validated") != -1) {
+              // console.log("validated");
               pictureState = `<a href="http://localhost:3030/foodValidate/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}/yes"><span style='color:green;'> validated <i class="fas fa-check"> </i> </span></a>`;
             } else {
+              // console.log("1 pending");
               pictureState = `<a href="http://localhost:3030/foodValidate/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}/non"><span style='color:orange;'> 1 pending <i class="far fa-clock"></i>  </span>   </a>     `;
             }
 
           } else {
+            // console.log(`${picturesUrl.length} pending`);
             pictureState = `<a href="http://localhost:3030/foodValidate/${food.id}_${food.name.replace(/ /g, '')}_${food.place.replace(/ /g, '')}/non"><span style='color:orange;'>  ${picturesUrl.length} pending <i class="far fa-clock"> </i>  </span>  </a>    `;
           }
+
+          // console.log("*********");
 
           // pictureimages is array of ids and pictures
           foodImages.push({
@@ -2127,6 +2153,24 @@ span.onclick = function() {
 
 });
 
+// delete item from list
+app.get("/foodDelete/:foodId", (req, res) => {
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    var toDelete = {
+      id: Number(req.params.foodId)
+    };
+    dbo.collection("foods").deleteOne(toDelete, function (err, obj) {
+      if (err) throw err;
+      console.log("1 food deleted");
+      db.close();
+
+      res.redirect("/foodList");
+
+    });
+  });
+});
 
 app.post("/foodAdd", urlencodedParser, (req, res) => {
 
