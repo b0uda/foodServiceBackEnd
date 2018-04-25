@@ -543,6 +543,8 @@ app.get("/foodValidate/:foodId/:validated", (req, res) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
       <title>Document</title>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+
       <style>
       body {
         font: 13px/1.231 "Lucida Grande", Verdana, sans-serif;
@@ -550,6 +552,18 @@ app.get("/foodValidate/:foodId/:validated", (req, res) => {
         color: #111;
         margin: 0;
       }
+      .fa-trash{
+        float:right;
+       font-size:3rem;
+       color:red;
+       transition:transform 1s;
+      }
+
+      .fa-trash:hover{
+      transform:scale(1.2);
+      }
+
+
       .site {
         /* width: 720px; */
         max-width: 55.38461538461538em;
@@ -807,14 +821,16 @@ background: #4CAF50;
     <body>
     <div class="site">
   <header class="entry-header wide">
-    <h2 class="entry-title">Pictures Pending for <%= pic_name %></h2>
+  <a href="http://localhost:3030/imagesRemove/<%= pictureUrl[0].split('-')[0] %>"> <i class="fa fa-trash"></i> </a>
+  
+  <h2 class="entry-title">Pictures Pending for <%= pic_name %></h2>
+   
   </header>
 
+  
   <div class="entry-content wide">
-
-    
+   
     <ul class="gallery-portfolio">
-
 
       <% if(validated == 'non') { %>
 
@@ -2170,6 +2186,45 @@ app.get("/foodDelete/:foodId", (req, res) => {
 
     });
   });
+});
+
+
+app.get("/imagesRemove/:imagePattern", (req, res) => {
+
+  let _folder = "./uploads/";
+  let picturesList = [];
+  pictureUrl = [];
+
+  var url = req.params.imagePattern;
+
+  console.log(url);
+
+  // Loop for images to get array of urls related to this food item
+  fs.readdir(_folder, (err, files) => {
+    files.forEach(file => {
+      picturesList.push(file);
+    });
+
+    picturesList.forEach(function (value, index) {
+
+      if (value.indexOf(url) !== -1) {
+        pictureUrl.push(value);
+      }
+    });
+
+    console.dir(pictureUrl);
+    // loop over folder and delete all urls in pictureUrl
+    pictureUrl.forEach((url) => {
+      fs.unlink(`./uploads/${url}`, (err) => {
+        if (err) throw err;
+        console.log(`successfully deleted ./uploads/${url}`);
+      });
+    });
+
+    res.redirect("/listImage");
+
+  });
+
 });
 
 app.post("/foodAdd", urlencodedParser, (req, res) => {
