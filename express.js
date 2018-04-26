@@ -55,7 +55,75 @@ MongoClient.connect(db_url, function (err, db) {
 
 app.set('view engine', 'pug')
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => {
+  res.end(`
+    
+  <style rel="stylesheet">
+body{
+padding:0;
+margin:0;
+background: #00adf7;
+}
+div{
+background: #00adf7;
+text-align:center;
+
+
+}
+
+h1{
+color:#00adf7;
+font-weight: bold;
+text-align:center;
+background:white;
+padding:30px;
+
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+
+
+}
+
+a{
+  text-decoration:none;
+  color:#00adf7;
+}
+
+
+
+  .btn{
+    color:##00adf7;
+text-align: center;
+padding: 20px;
+    text-align: center;
+cursor: pointer;
+font-size:24px;
+margin: 0 0 0 100px;
+    border-radius: 4px;
+background-color:#fff;
+border: none;
+padding: 20px;
+width: 200px;
+display: inline-block;
+transition: all 0.5s;
+margin-top:20px;
+transition: all 1s;
+box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+
+
+
+  }
+
+  .btn:hover{
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    transform: scale(1.05);
+  }
+  </style>
+  <div>
+      <h1>Food Service Admin</h1>
+      <a class="btn" href="http://localhost:3030/foodList">Food JSON</a>
+      <a class="btn" href="http://localhost:3030/listimage">Food Images</a>
+  </div>`);
+});
 
 
 
@@ -333,6 +401,8 @@ app.get("/listImage", (request, response) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+
       <title>Document</title>
       <style>
       div {
@@ -412,23 +482,58 @@ li#index0{
   display:none;
 }
 
+h1{
+  margin:0;
+  padding:18px;
+}
+
+h1 a:hover {
+  transform:scale(1.1);
+}
+
+@media screen and (min-width: 960px){
+  .table-container{
+    display:inline-block;
+    width:49%;
+    margin:0;
+    padding:0;
+    background:white;
+    margin-left:.5%;
+    margin-top:1%;
+   vertical-align:top;
+    min-height:500px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  }
+
+  ol li{
+    color:#00adf7;
+  }
+
+  h2{
+    color:#00adf7;
+  }
+
+
+}
+
       </style>
     </head>
     
     <body>
-    <h1 style="color:white; text-align:center;">Food Service Images ADMIN PANEL</h1>
-      <h1>
+    <h1 style="color:#00adf7; text-align:center; background:white"><a style="transition:all 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
+     Food Service Images ADMIN PANEL</h1>
+      <div class="table-container">
         <div>
           <h2 >
-            Images Waiting
+            Images Waiting <i style="color: #FF9800;" class="fas fa-clock"></i>
           </h2>
           <ul class="item-list">
 
         <div>
-        <ol id="link_ul" style="text-align:center; color:white; border-bottom:2px white solid;">
-        <li style="font-size:2rem;">id</li>
-        <li style="font-size:2rem;">name of food</li>
-        <li style="font-size:2rem;">place of food</li>
+        <ol id="link_ul" style="text-align:center; background:#00adf7; border-bottom:2px white solid;">
+        <li class="ol_header" style="font-size:2rem; color:white;">id</li>
+        <li class="ol_header" style="font-size:2rem; color:white;">name</li>
+        <li class="ol_header" style="font-size:2rem; color:white;">place</li>
       </div>
         </li>
 
@@ -445,22 +550,18 @@ li#index0{
               <% } %>
           </ul>
         </div>
-      </h1>
-
-
-
-      <h1>
+      </div><div class="table-container">
       <div>
         <h2 >
-         Image Validated
+         Image Validated <i style="color:#4CAF50;" class="fas fa-check"></i>
         </h2>
         <ul class="item-list">
 
       <div>
-      <ol id="link_ul" style="text-align:center; color:white; border-bottom:2px white solid;">
-      <li style="font-size:2rem;">id</li>
-      <li style="font-size:2rem;">name of food</li>
-      <li style="font-size:2rem;">place of food</li>
+      <ol id="link_ul" style="text-align:center; background:#00adf7; color:white; border-bottom:2px white solid;">
+      <li class="ol_header" style="font-size:2rem; color:white;">id</li>
+      <li class="ol_header" style="font-size:2rem; color:white;">name</li>
+      <li class="ol_header" style="font-size:2rem; color:white;">place</li>
     </div>
       </li>
 
@@ -477,7 +578,7 @@ li#index0{
             <% } %>
         </ul>
       </div>
-    </h1>
+    </div>
     
     </body>`);
 
@@ -663,11 +764,11 @@ app.get("/foodValidate/:foodId/:validated", (req, res) => {
         color:#fff;
   text-align: center;
   padding: 20px;
-        text-align: center;
+  text-align: center;
   cursor: pointer;
   font-size:24px;
   margin: 0 0 0 100px;
-        border-radius: 4px;
+  border-radius: 4px;
   background-color:#00adf7;
   border: none;
   padding: 20px;
@@ -678,6 +779,10 @@ app.get("/foodValidate/:foodId/:validated", (req, res) => {
   
       }
 
+.navigation{
+  text-align:center;
+}
+
       #btn_validate , #btn_delete{
         color:#fff;
         text-align: center;
@@ -685,19 +790,13 @@ app.get("/foodValidate/:foodId/:validated", (req, res) => {
         display: inline-block;
         transition: all 0.5s;
         width:50%;
+        height:30px;
+        line-height:30px;
       }
 
       #btn_validate:hover , #btn_delete:hover{
         outline-color:transparent;
-        animation: btn_animate 1s linear;
-       
-      }
-
-      @keyframes btn_animate{
-        0%{ transform: rotate(0);}
-        30%{ transform: rotate(-5deg);}
-        60%{ transform: rotate(5deg);}
-        0%{ transform: rotate(0);}
+        font-size:150%;
       }
 
       #btn_validate{
@@ -717,11 +816,13 @@ background: #4CAF50;
       .food_item{
         transition: all .5s;
         width:20%;
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+        padding:0;
 
       }
 
       .food_item:hover{
-        transform: scale(1.1);
+      transform: scale(1.03);
       }
 
       .site{
@@ -787,6 +888,15 @@ background: #4CAF50;
           from {transform:scale(0)} 
           to {transform:scale(1)}
       }
+
+      .fa-arrow-left{
+        font-size:3rem; color:#00adf7;
+        transition:transform 1s;
+      }
+
+      .fa-arrow-left:hover{
+        transform:scale(1.1);
+      }
       
       /* The Close Button */
       .close {
@@ -819,11 +929,12 @@ background: #4CAF50;
     </head>
     
     <body>
-    <div class="site">
+     <div class="site">
+    
   <header class="entry-header wide">
-  <a href="http://localhost:3030/imagesRemove/<%= pictureUrl[0].split('-')[0] %>"> <i class="fa fa-trash"></i> </a>
-  
-  <h2 class="entry-title">Pictures Pending for <%= pic_name %></h2>
+  <a  href="http://localhost:3030/foodList"><i  class="fas fa-arrow-left"></i>  </a>
+  <a  href="http://localhost:3030/imagesRemove/<%= pictureUrl[0].split('-')[0] %>"> <i class="fa fa-trash"></i> </a>
+  <h2 style="font-size:2rem; vertical-align:top; display:inline-block; margin-left:20%;" class="entry-title"> <%= pic_name.split("_")[1] %> Chez <%= pic_name.split("_")[2] %></h2>
    
   </header>
 
@@ -856,9 +967,9 @@ background: #4CAF50;
         
        
         
-        <a href="#"><img alt=""  class="food_img food_img_validated" src="http://localhost:3030/uploads/<%= pics[0] %>"></a>
+        <a href="#"><img alt="" style=" box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);" class="food_img food_img_validated" src="http://localhost:3030/uploads/<%= pics[0] %>"></a>
        
-        
+       
 
         <% } %>
 
@@ -870,7 +981,7 @@ background: #4CAF50;
   <% if(validated != 'new') { %>
 
   <form class="navigation" encType="multipart/form-data" method="post" action="http://localhost:3030/uploadAdmin/<%= pics[0].split("-")[0] %>">
-  <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
+  
   <input class="btn" name="picture" type="file" />
   <input class="btn" type="submit" />
   </form>
@@ -881,8 +992,7 @@ background: #4CAF50;
   <% if(validated == 'new') { %>
 
     <form class="navigation" encType="multipart/form-data" method="post" action="http://localhost:3030/uploadAdmin/<%= pics[0] %>">
-    <a class="btn" href="http://localhost:3030/foodList">Back to List</a>
-    <input class="btn" name="picture" type="file" />
+     <input class="btn" name="picture" type="file" />
     <input class="btn" type="submit" />
     </form>
   
@@ -1108,17 +1218,24 @@ app.get('/food/:id', function (req, res) {
 // get all food
 app.get('/places', function (req, res) {
   // todo places need to get them with query
+  // let places = ["All", "mcdonalds", "Authentik", "Pizza Hut", "khalid", "Tacos de Lyon"];
+  let places = [];
 
-  const places = ["All", "mcdonalds", "Authentik", "Pizza Hut", "khalid", "Tacos de Lyon"];
-  res.json(places);
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    dbo.collection("foods").distinct("place", function (err, result) {
+      places = ["All", ...result];
+      res.json(places);
+      console.log(places);
+    })
+  });
 })
 
 // get food by budget
 app.get('/budgetFood/:budget', function (req, res) {
   // todo mongodb
-
   const budget = req.params.budget;
-
   let foodListFiltred = [];
 
   foodList.forEach(food => {
@@ -1126,9 +1243,6 @@ app.get('/budgetFood/:budget', function (req, res) {
       foodListFiltred.push(food);
     }
   });
-
-
-
   res.json(foodListFiltred);
 })
 
@@ -1148,9 +1262,6 @@ app.get('/categoryFood/:budget/:category', function (req, res) {
       foodListFiltred.push(food);
     }
   });
-
-
-
   res.json(foodListFiltred);
 })
 
@@ -1459,7 +1570,7 @@ app.get("/foodList", (req, res) => {
 
     h1{
 text-align:center;
-font-size:3rem;
+font-size:2rem;
 
     }
     .container{
@@ -1533,7 +1644,7 @@ font-size:3rem;
   
   @media screen and (max-width: 700px){
     .box{
-      width: 70%;
+      width: 100%;
     }
     .popup{
       width: 70%;
@@ -1623,12 +1734,15 @@ font-size:3rem;
     <meta charset=utf-8 />
     <title>DataTables - JS Bin</title>
   </head>
-  <body>
-    <div class="container">
-   <div class="box" style="text-align:center;">
-   <h1 style=" display:inline-block;">List of Foods Json </h1>
-    <a style="border-radius: 50%;" class="button " href="#popup1">+</a>
-  </div>  
+  <body style="margin:0;">
+  <div class="box" style="text-align:center;">
+  <a style=" background:white; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
+
+  <h1 style=" display:inline-block; color:white">List of Foods Json </h1>
+    <a style="border-radius: 50%; background:white; color:#00adf7;" class="button " href="#popup1">+</a>
+  </div>
+    <div class="container" style="padding:0;">
+     
       <table id="example"
         datatable="" width="100%" cellspacing="0"
         data-page-length="33"
@@ -1983,6 +2097,7 @@ background: #4CAF50;
         color:#00adf7;
         font-weight:bold;
         text-align:center;
+      
       }
 
       .food_item{
