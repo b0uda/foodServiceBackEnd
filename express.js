@@ -122,6 +122,7 @@ box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
       <h1>Food Service Admin</h1>
       <a class="btn" href="http://localhost:3030/foodList">Food JSON</a>
       <a class="btn" href="http://localhost:3030/listimage">Food Images</a>
+      <a class="btn" href="http://localhost:3030/listPlaces">Places JSON</a>
   </div>`);
 });
 
@@ -2389,6 +2390,490 @@ app.post("/foodAdd", urlencodedParser, (req, res) => {
   res.redirect('/foodList');
 
 })
+
+
+app.get("/getPlaceInfo/:place", (req, res) => {
+  let _place = req.params.place.toLowerCase();
+  console.log("place is :" + _place);
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    var query = {
+      name: _place
+    };
+    dbo.collection("places").find(query).toArray(function (err, result) {
+      if (err) throw err;
+      console.log(result);
+      db.close();
+      res.json(result);
+    });
+  });
+});
+
+app.get("/addPlaceDB", (req, res) => {
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    var myobj = [{
+      id: 1,
+      name: "Authentic",
+      long: 2.323232,
+      lat: 32.3434,
+      time: "8-16",
+      phone: "0537375243"
+    }];
+    dbo.collection("places").insertMany(myobj, function (err, res) {
+      if (err) throw err;
+      console.log("Number of documents inserted: " + res.insertedCount);
+      db.close();
+    });
+  });
+});
+
+app.get("/listPlaces", (req, res) => {
+  var compiled = _.template(`
+  <!DOCTYPE html>
+  <html lang="en">
+  
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    <style>
+   body,html{
+     background:#00adf7;
+     padding:0;
+     margin:0;
+   }
+   
+
+   .title{
+     background:white;
+     display:block;
+     margin:0;
+     color: #00adf7;
+     text-align:center;
+     padding:10px;
+     font-size:2.5rem;
+     margin-bottom:10px;
+   }
+
+   table{
+    background:white;
+    margin:auto;
+    padding:0;
+    border-collapse:collapse;
+   }
+
+   thead{
+     background:#00adf7;
+     color:white;
+   }
+
+   tr th, tr td{
+     width:20%;
+     margin:0;
+   }
+
+   tr:hover{
+     background:#00adf7;
+     color:white;
+   
+    }
+   
+    thead tr{
+      border: 1px white solid;
+
+    }
+    tbody {
+      border: 1px white solid;
+
+    }
+
+tbody td{
+  border-left: 1px #00adf7 solid;
+  border-right: 1px #00adf7 solid;
+}
+
+   tr{
+     height:40px;
+     text-align:center;
+   }
+
+   .button{
+    width: 50px;
+    height: 50px;
+    background:#00adf7;
+    display:inline-block;
+    color:white;
+    line-height:3rem;
+    border:none;
+    font-size:3rem;
+    text-decoration:none;
+    transition:all 1s;
+    margin-left:50px;
+  }
+
+  .button:hover{
+    transform:scale(1.1);
+  }
+
+
+
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+  }
+  .overlay:target {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .popup {
+    margin: 700px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 30%;
+    position: relative;
+    transition: all 5s ease-in-out;
+    margin-top:100px;
+  }
+  
+  .popup h2 {
+    margin-top: 0;
+    color: #00adf7;
+    font-family: Tahoma, Arial, sans-serif;
+  }
+  .popup .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+  }
+  .popup .close:hover {
+    color: #00adf7;
+  }
+  .popup .content {
+    max-height: 30%;
+    overflow: auto;
+  }
+  
+  @media screen and (max-width: 700px){
+    .box{
+      width: 100%;
+    }
+    .popup{
+      width: 70%;
+    }
+  }
+
+
+  .form {
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+    max-width: 360px;
+    margin: 0 auto 100px;
+    padding: 45px;
+    text-align: center;
+
+  }
+  .form input {
+    font-family: "Roboto", sans-serif;
+    outline: 0;
+    background: #f2f2f2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  .form button  {
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    outline: 0;
+    background: ;
+    width: 100%;
+    border: 0;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+    -webkit-transition: all 0.3 ease;
+    transition: all 0.3 ease;
+    cursor: pointer;
+  }
+  .form button:hover,.form button:active,.form button:focus {
+    background: #00f3ff;
+  }
+
+  .containerDB{
+    margin-top:10px;
+  }
+
+  .containerDB > div {
+    display:inline-block;
+    width:48%;
+    background:white;
+    vertical-align:top;
+    margin-left:1%;
+    
+  }
+
+  .containerDB h2{
+    background:#00adf7;
+    margin:0;
+    padding:10px;
+    border:1px white solid; 
+    color:white;
+    text-align:center;
+    font-weight:bold;
+  }
+
+  .containerDB h2 span{
+    font-size:.7rem;
+  }
+
+  .elementToAdd , .elementToDelete{
+    padding:5px;
+    text-align:center;
+  }
+
+</style>
+    </head>
+   <body>
+   <h1 class="title"><span >Places Admin Panel
+   <a style="border-radius: 50%;" class="button " href="#popup1">+</a>
+   </h1>
+   
+   <table class="container">
+     <thead>
+       <tr>
+         <th><h1>id</h1></th>
+         <th><h1>name</h1></th>
+         <th><h1>telephone</h1></th>
+         <th><h1>horaire</h1></th>
+         <th><h1>lat , long</h1></th>
+       </tr>
+     </thead>
+     <tbody>
+
+     <% for(var place in places) { %>
+      <tr>
+         <td><%= places[place].id %> </td>
+         <td><%= places[place].name %></td>
+         <td><%= places[place].phone %></td>
+         <td><%= places[place].time %></td>
+         <td>(<%= places[place].lat %> , <%= places[place].long %>) </td>
+       </tr>
+      
+      <% } %>
+
+     </tbody>
+   </table>
+
+<div class="containerDB" >
+
+<div>
+
+<h2>Need To Add   </h2>
+<!--<span>places present in food Collection && no info in place collection</span> -->
+
+   <% for(var place in needToAdd) { %>
+     <div class="elementToAdd"> <%= needToAdd[place] %>  </div>
+    <% } %>
+
+    </div>
+
+    <div>
+
+    <h2>Need To Delete</h2> 
+   
+<!--  <span>present in places collection  && and no item in food collection reference these places</span> -->
+
+    <% for(var place in needToDelete) { %>
+      <div class="elementToDelete"> <%= needToDelete[place] %> <a href="http://localhost:3030/placeDelete/<%= needToDelete[place] %>"><i style="float:right; cursor:pointer; color:red;" class="fas fa-trash"></i></a>
+
+      </div>
+     <% } %>
+
+     </div>
+</div>
+   
+     <div id="popup1" class="overlay">
+	<div class="popup form">
+		<h2>Add new place form</h2>
+		<a class="close" href="#">&times;</a>
+		 
+    <form method="post" action="http://localhost:3030/placeAdd" class="login-form">
+    <input name="name" type="text" placeholder="name"/>
+    <input name="phone" type="text" placeholder="phone"/>
+    <input name="time" type="text" placeholder="horaire"/>
+    <input name="lat" type="number" placeholder="lat"/>
+    <input name="long" type="number" placeholder="long"/>
+   
+      <input style="background: #00adf7; color:white; " type="submit" value="Ajouter" />
+
+  </form>	 
+	</div>
+</div>
+
+  </body>`);
+
+  // get all unique places in foods place field database
+  let _distinctPlaces = [];
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+
+  });
+
+  // console.dir(_distinctPlaces);
+
+  // get all places in places collection database
+  let _places = [];
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+
+    dbo.collection("foods").distinct("place", function (err, result) {
+      _distinctPlaces = result;
+    });
+
+    dbo.collection("places").find({}).toArray(function (err, result) {
+      if (err) throw err;
+      _places = result;
+      db.close();
+
+
+      // get only names from _places collections
+      let placesName = [];
+      for (let i = 0; i < _places.length; i++) {
+        const element = _places[i];
+        placesName.push(element.name);
+      }
+
+      let _distinctPlacesNoSpace = [];
+      for (let i = 0; i < _distinctPlaces.length; i++) {
+
+        _distinctPlacesNoSpace.push(_distinctPlaces[i].replace(/ /g, '').toLowerCase());
+      }
+
+      // retrive the places that are on foods colection and not at places collection
+      // need to add 
+      var _needToAdd = _distinctPlacesNoSpace.filter(function (n) {
+        return !this.has(n)
+      }, new Set(placesName));
+
+      // retrive the places that are on foods colection and not at places collection
+      // need to delete
+      var _needToDelete = placesName.filter(function (n) {
+        return !this.has(n)
+      }, new Set(_distinctPlacesNoSpace));
+
+
+
+      let template = compiled({
+        places: _places,
+        needToAdd: _needToAdd,
+        needToDelete: _needToDelete
+      });
+      res.end(template);
+    });
+  });
+
+
+
+});
+
+
+app.get("/placeDelete/:placeName", (req, res) => {
+
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    var myquery = {
+      name: req.params.placeName.replace(/ /g, '').toLowerCase()
+    };
+    dbo.collection("places").deleteOne(myquery, function (err, obj) {
+      if (err) throw err;
+      console.log("1 place document deleted");
+      db.close();
+    });
+  });
+
+  res.redirect('/listPlaces');
+
+});
+
+
+app.post("/placeAdd", urlencodedParser, (req, res) => {
+
+  if (!req.body) return res.sendStatus(400)
+
+  var maxId;
+
+  // get max id for autogeneration
+  MongoClient.connect(db_url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodService");
+    dbo.collection("places").find({}, {
+      id: 1
+    }).sort({
+      id: -1
+    }).toArray(function (err, result) {
+      if (err) throw err;
+
+      db.close();
+      maxId = result[0].id;
+      console.log(maxId);
+      maxId = Number(maxId);
+      let _id = ++maxId;
+      console.log(`max : ${maxId} , new : ${_id}`);
+      // Add food Item
+      MongoClient.connect(db_url, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("foodService");
+        var foodToAdd = {
+          id: _id,
+          name: req.body.name.replace(/ /g, ''),
+          phone: req.body.phone,
+          time: req.body.time,
+          lat: req.body.lat,
+          long: req.body.long
+        };
+        dbo.collection("places").insertOne(foodToAdd, function (err, res) {
+          if (err) throw err;
+          console.log("1 place Item inserted");
+          db.close();
+        });
+      });
+
+    });
+  });
+
+  res.redirect('/listPlaces');
+
+})
+
+
+
+
 
 // creation of database
 
