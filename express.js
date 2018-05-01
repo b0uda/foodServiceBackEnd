@@ -57,7 +57,9 @@ app.set('view engine', 'pug')
 
 app.get('/', (req, res) => {
   res.end(`
-    
+    <head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    </head>
   <style rel="stylesheet">
 body{
 padding:0;
@@ -117,9 +119,19 @@ box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     transform: scale(1.05);
   }
+
+.link:hover{
+  transform:scale(1.1);
+}
+
   </style>
   <div>
-      <h1>Food Service Admin</h1>
+      <h1>
+    <a class="link" style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
+    <a class="link" style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/foodList"><i style="line-height:3rem;" class="fas fa-utensils"></i> </i></a> 
+    <a class="link" style=" background:#00adf7; color:white; transition:transform 1s;  text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listimage"><i style="line-height:3rem;" class="fas fa-images"></i> </i></a>
+
+    Food Service Admin</h1>
       <a class="btn" href="http://localhost:3030/foodList">Food JSON</a>
       <a class="btn" href="http://localhost:3030/listimage">Food Images</a>
       <a class="btn" href="http://localhost:3030/listPlaces">Places JSON</a>
@@ -521,8 +533,10 @@ h1 a:hover {
     </head>
     
     <body>
-    <h1 style="color:#00adf7; text-align:center; background:white"><a style="transition:all 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
-     Food Service Images ADMIN PANEL</h1>
+    <h1 style="color:#00adf7; text-align:center; background:white"><a style="transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
+    <a style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
+    <a style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/foodList"><i style="line-height:3rem;" class="fas fa-utensils"></i> </i></a> 
+    Food Service Images ADMIN PANEL</h1>
       <div class="table-container">
         <div>
           <h2 >
@@ -1731,14 +1745,19 @@ font-size:2rem;
   text-decoration:none;
 }
 
+.link:hover{
+  transform:scale(1.1);
+}
+
     </style>
     <meta charset=utf-8 />
     <title>DataTables - JS Bin</title>
   </head>
   <body style="margin:0;">
   <div class="box" style="text-align:center;">
-  <a style=" background:white; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
-
+ <a class="link" style=" background:white; transition:transform 1s; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
+ <a class="link" style=" background:white; transition:transform 1s; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
+ <a class="link" style=" background:white; transition:transform 1s; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listimage"><i style="line-height:3rem;" class="fas fa-images"></i> </i></a>
   <h1 style=" display:inline-block; color:white">List of Foods Json </h1>
     <a style="border-radius: 50%; background:white; color:#00adf7;" class="button " href="#popup1">+</a>
   </div>
@@ -2373,7 +2392,7 @@ app.post("/foodAdd", urlencodedParser, (req, res) => {
         var foodToAdd = {
           id: _id,
           name: req.body.name,
-          place: req.body.place,
+          place: toTitleCase(req.body.place),
           price: req.body.price,
           category: req.body.category
         };
@@ -2390,6 +2409,7 @@ app.post("/foodAdd", urlencodedParser, (req, res) => {
   res.redirect('/foodList');
 
 })
+
 
 
 app.get("/getPlaceInfo/:place", (req, res) => {
@@ -2654,10 +2674,23 @@ tbody td{
     text-align:center;
   }
 
+  .link:hover{
+    transform:scale(1.1);
+  }
+
 </style>
     </head>
    <body>
-   <h1 class="title"><span >Places Admin Panel
+   <h1 class="title">
+   <a class="link" style=" background:#00adf7; transition:1s transform; color:white; text-decoration:none; margin-top:5px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
+ <a class="link" style=" background:#00adf7; transition:1s transform; color:white; text-decoration:none; margin-top:5px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/foodList"><i style="line-height:3rem;" class="fas fa-utensils"></i> </i></a>
+ <a class="link" style=" background:#00adf7; transition:1s transform; color:white; text-decoration:none; margin-top:5px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listimage"><i style="line-height:3rem;" class="fas fa-images"></i> </i></a>
+   
+ 
+
+
+
+   <span >Places Admin Panel
    <a style="border-radius: 50%;" class="button " href="#popup1">+</a>
    </h1>
    
@@ -2888,6 +2921,14 @@ app.post("/placeAdd", urlencodedParser, (req, res) => {
 //     });
 //   });
 // });
+
+
+
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
 
 
 app.listen(3030, () => console.log('Example app listening on port 3030!'))
