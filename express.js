@@ -127,8 +127,8 @@ box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   </style>
   <div>
       <h1>
-    <a class="link" style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
-    <a class="link" style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/foodList"><i style="line-height:3rem;" class="fas fa-utensils"></i> </i></a> 
+      <a class="link" style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/foodList"><i style="line-height:3rem;" class="fas fa-utensils"></i> </i></a> 
+      <a class="link" style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
     <a class="link" style=" background:#00adf7; color:white; transition:transform 1s;  text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listimage"><i style="line-height:3rem;" class="fas fa-images"></i> </i></a>
 
     Food Service Admin</h1>
@@ -529,6 +529,129 @@ h1 a:hover {
 
 }
 
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  transition: opacity 500ms;
+  visibility: hidden;
+  opacity: 0;
+}
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
+  margin: 700px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 5px;
+  width: 30%;
+  position: relative;
+  transition: all 5s ease-in-out;
+  margin-top:100px;
+}
+
+.popup h2 {
+  margin-top: 0;
+  color: #00adf7;
+  font-family: Tahoma, Arial, sans-serif;
+}
+.popup .close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  transition: all 200ms;
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+.popup .close:hover {
+  color: #00adf7;
+}
+.popup .content {
+  max-height: 30%;
+  overflow: auto;
+}
+
+@media screen and (max-width: 700px){
+  .box{
+    width: 100%;
+  }
+  .popup{
+    width: 70%;
+  }
+}
+
+
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: center;
+
+}
+.form input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.form button  {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: ;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+.form button:hover,.form button:active,.form button:focus {
+  background: #00f3ff;
+}
+
+
+
+.button{
+
+
+  background:white;
+  color:#00adf7;
+  display:inline-block;
+
+  line-height:3rem;
+  border:none;
+  font-size:3rem;
+  text-decoration:none;
+  transition:all 1s;
+  margin-left:50px;
+}
+
+.fantome_item:first-of-type{
+  display:none;
+}
+
+
       </style>
     </head>
     
@@ -536,7 +659,9 @@ h1 a:hover {
     <h1 style="color:#00adf7; text-align:center; background:white"><a style="transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
     <a style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
     <a style=" transition:transform 1s; background:#00adf7; color:white; text-decoration:none;  margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/foodList"><i style="line-height:3rem;" class="fas fa-utensils"></i> </i></a> 
-    Food Service Images ADMIN PANEL</h1>
+    Food Service Images ADMIN PANEL
+    <a style=" background:#00adf7; padding:3px; border-radius:3px; color:white;" class="button " href="#popup1">Fantome img</a>
+    </h1>
       <div class="table-container">
         <div>
           <h2 >
@@ -594,6 +719,19 @@ h1 a:hover {
         </ul>
       </div>
     </div>
+
+
+    <div id="popup1" class="overlay">
+    <div class="popup form">
+      <h2>Fantome Images</h2>
+      <a class="close" href="#">&times;</a>
+      <% for(var pic in picsFantome) { %>
+       <div class="fantome_item">
+       <%= picsFantome[pic] %>   <a style="float:right; color:red;"  href="http://localhost:3030/imagesRemove/<%= picsFantome[pic] %>"> <i class="fa fa-trash"></i> </a>
+       </div>
+        <% } %>
+    </div>
+  </div>
     
     </body>`);
 
@@ -603,7 +741,7 @@ h1 a:hover {
   let picturesList = [];
   let pictureGroupsNonValidated = [];
   let pictureGroupsYesValidated = [];
-
+  let picturesGroupsFantome = []
 
   // pictures non-validated
 
@@ -630,16 +768,31 @@ h1 a:hover {
 
 
 
+    // retreive the id_name_place pattern from foodList
+    let patterns = [];
+    foodList.forEach(function (value) {
+      patterns.push(`${value.id}_${value.name.replace(/ /g, '')}_${value.place.replace(/ /g , '')}`);
+    })
+
+
+    // pictures fantome that exist but no reference in database
+    picturesList.forEach(function (value) {
+      const _name = value.split("-")[0];
+      if (patterns.indexOf(_name) > -1) {
+
+      } else {
+        picturesGroupsFantome.push(_name);
+        console.log(`${_name} is a fantome picture`);
+      }
+    });
 
     let template = compiled({
       picsNon: pictureGroupsNonValidated,
-      picsYes: pictureGroupsYesValidated
+      picsYes: pictureGroupsYesValidated,
+      picsFantome: picturesGroupsFantome
     });
     response.end(template);
   });
-
-
-
 
 });
 
@@ -1395,6 +1548,8 @@ app.get("/foodList", (req, res) => {
       @include dt-display-flex;
       @include dt-flex-vertical;
       @include dt-flex-11a;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+
     }
     
     table.dataTable {
@@ -1592,6 +1747,7 @@ font-size:2rem;
       background:white;
       color:#00adf7;
       padding:10px;
+      
 
     }
     body{
@@ -1754,7 +1910,7 @@ font-size:2rem;
     <title>DataTables - JS Bin</title>
   </head>
   <body style="margin:0;">
-  <div class="box" style="text-align:center;">
+  <div class="box" style="text-align:center; box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);  ">
  <a class="link" style=" background:white; transition:transform 1s; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/"><i style="line-height:3rem;" class="fa fa-home"></i></a>
  <a class="link" style=" background:white; transition:transform 1s; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listPlaces"><i style="line-height:3rem;" class="fas fa-map-marker"></i> </i></a>
  <a class="link" style=" background:white; transition:transform 1s; color:#00adf7; text-decoration:none; margin-top:15px; margin-left:10px; border-radius:50%; width:50px; height:50px;  font-size:2rem; float:left"  href="http://localhost:3030/listimage"><i style="line-height:3rem;" class="fas fa-images"></i> </i></a>
@@ -1804,8 +1960,6 @@ font-size:2rem;
         
           <% } %>
       
-        
-        
         </tbody>
       </table>
     </div>
@@ -1818,15 +1972,16 @@ font-size:2rem;
 		<a class="close" href="#">&times;</a>
 		 
     <form method="post" action="http://localhost:3030/foodAdd" class="login-form">
-    <input name="name" type="text" placeholder="name"/>
-    <input name="place" type="text" placeholder="place"/>
+    <input required name="name" type="text" placeholder="name"/>
+    <input required name="place" type="text" placeholder="place"/>
 
-    <select style="width:100%; height: 50px; border:none; margin-bottom:5px;" name="category">
+
+    <select required style="width:100%; height: 50px; border:none; margin-bottom:5px;" name="category">
           <option>burger</option>
           <option>pizza</option>
           <option>tacos</option>
     </select>
-    <input name="price" type="number" placeholder="price"/>
+    <input required name="price" type="number" placeholder="price"/>
       <input style="background: #00adf7; color:white; " type="submit" value="Ajouter" />
 
   </form>	 
@@ -2754,11 +2909,11 @@ tbody td{
 		<a class="close" href="#">&times;</a>
 		 
     <form method="post" action="http://localhost:3030/placeAdd" class="login-form">
-    <input name="name" type="text" placeholder="name"/>
-    <input name="phone" type="text" placeholder="phone"/>
-    <input name="time" type="text" placeholder="horaire"/>
-    <input name="lat" type="number" placeholder="lat"/>
-    <input name="long" type="number" placeholder="long"/>
+    <input name="name" required type="text" placeholder="name"/>
+    <input name="phone" required type="text" pattern="^[0-9]{10}$" placeholder="0537375343"/>
+    <input name="time" required type="text" pattern="^[0-9]{1,2}-[0-9]{1,2}$" placeholder="8-20"/>
+    <input name="lat" required type="text" pattern="^[0-9]{1,2}.[0-9]*$" placeholder="23.323223"/>
+    <input name="long" required type="text" pattern="^-?[0-9]{1,2}.[0-9]*$" placeholder="12.21212"/>
    
       <input style="background: #00adf7; color:white; " type="submit" value="Ajouter" />
 
