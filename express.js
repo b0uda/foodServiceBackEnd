@@ -14,7 +14,7 @@ var bodyParser = require('body-parser')
 var FormData = require('form-data');
 
 var MongoClient = require('mongodb').MongoClient;
-var db_url = "mongodb://localhost:27017/";
+var db_url = "mongodb+srv://bouda:B0uda-bouda!@foodservice-wnasg.mongodb.net/test?retryWrites=true";
 var ObjectId = require('mongodb').ObjectID;
 
 let foodList;
@@ -45,7 +45,7 @@ app.use("/uploads", express.static('uploads'));
 
 MongoClient.connect(db_url, function (err, db) {
   if (err) throw err;
-  var dbo = db.db("foodService");
+  var dbo = db.db("foodservice");
   dbo.collection("foods").find({}).toArray(function (err, result) {
     if (err) throw err;
     foodList = result;
@@ -1391,7 +1391,7 @@ app.get('/places', function (req, res) {
 
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     dbo.collection("foods").distinct("place", function (err, result) {
       places = ["All", ...result];
       res.json(places);
@@ -2014,7 +2014,7 @@ font-size:2rem;
 
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     dbo.collection("foods").find({}).toArray(function (err, result) {
       if (err) throw err;
       foodList = result;
@@ -2463,7 +2463,7 @@ span.onclick = function() {
 app.get("/foodDelete/:foodId", (req, res) => {
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     var toDelete = {
       id: Number(req.params.foodId)
     };
@@ -2526,7 +2526,7 @@ app.post("/foodAdd", urlencodedParser, (req, res) => {
   // get max id for autogeneration
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     dbo.collection("foods").find({}, {
       id: 1
     }).sort({
@@ -2543,7 +2543,7 @@ app.post("/foodAdd", urlencodedParser, (req, res) => {
       // Add food Item
       MongoClient.connect(db_url, function (err, db) {
         if (err) throw err;
-        var dbo = db.db("foodService");
+        var dbo = db.db("foodservice");
         var foodToAdd = {
           id: _id,
           name: req.body.name,
@@ -2572,7 +2572,7 @@ app.get("/getPlaceInfo/:place", (req, res) => {
   console.log("place is :" + _place);
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     var query = {
       name: _place
     };
@@ -2588,7 +2588,7 @@ app.get("/getPlaceInfo/:place", (req, res) => {
 app.get("/addPlaceDB", (req, res) => {
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     var myobj = [{
       id: 1,
       name: "Authentic",
@@ -2927,7 +2927,7 @@ tbody td{
   let _distinctPlaces = [];
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
 
   });
 
@@ -2937,7 +2937,7 @@ tbody td{
   let _places = [];
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
 
     dbo.collection("foods").distinct("place", function (err, result) {
       _distinctPlaces = result;
@@ -2994,7 +2994,7 @@ app.get("/placeDelete/:placeName", (req, res) => {
 
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     var myquery = {
       name: req.params.placeName.replace(/ /g, '').toLowerCase()
     };
@@ -3019,7 +3019,7 @@ app.post("/placeAdd", urlencodedParser, (req, res) => {
   // get max id for autogeneration
   MongoClient.connect(db_url, function (err, db) {
     if (err) throw err;
-    var dbo = db.db("foodService");
+    var dbo = db.db("foodservice");
     dbo.collection("places").find({}, {
       id: 1
     }).sort({
@@ -3036,7 +3036,7 @@ app.post("/placeAdd", urlencodedParser, (req, res) => {
       // Add food Item
       MongoClient.connect(db_url, function (err, db) {
         if (err) throw err;
-        var dbo = db.db("foodService");
+        var dbo = db.db("foodservice");
         var foodToAdd = {
           id: _id,
           name: req.body.name.replace(/ /g, ''),
@@ -3068,7 +3068,7 @@ app.post("/placeAdd", urlencodedParser, (req, res) => {
 // app.get("/dbCreate", (req, res) => {
 //   MongoClient.connect(db_url, function (err, db) {
 //     if (err) throw err;
-//     var dbo = db.db("foodService");
+//     var dbo = db.db("foodservice");
 //     dbo.collection("foods").insertMany(foodList, function (err, res) {
 //       if (err) throw err;
 //       console.log("Number of documents inserted: " + res.insertedCount);
